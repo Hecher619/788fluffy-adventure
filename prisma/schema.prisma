@@ -1,0 +1,30 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  password     String
+  storageUsed  BigInt   @default(0)
+  storageLimit BigInt   @default(10737418240) // 10 GB Free Vault Tier
+  createdAt    DateTime @default(now())
+  media        Media[]
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  url        String
+  type       String   // 'image' or 'video'
+  size       Int
+  isFavorite Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
